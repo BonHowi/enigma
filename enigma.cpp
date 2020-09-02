@@ -4,95 +4,107 @@
 #include <string>
 #include "classes.h"
 
-using namespace std;
+// usinng namespace std;
 
 int main(int argc, char* argv[]) {
-	string s, t;		// temporary strings
-	int alphabetSize;
+        int asize;
 
-	// read alphabet
-	cin >> alphabetSize;
-	cin.get();		// newline
-	getline(cin, s);
+        // read alphabet
+        cin >> asize;
+        Alphabet alphabet(asize);
 
-	// make alphabet
-	Alphabet alphabet;
-	alphabet.init(alphabetSize, s);
+        // read number of rotors
+        int numRotors;
+        cin >> numRotors;
+        Rotor* rotors = new Rotor[numRotors];           // make empty rotors
 
-	// read number of rotors
-	int numRotors;
-	cin >> numRotors;
-	cin.get();		// newline
-	Rotor* rotors = new Rotor[numRotors];		// make empty rotors
+        // make alphabet
+        string temp;
+        for (int i = 0; i < asize; i++) {
+                string str = to_string(i+1);
+                temp = str;
+                alphabet.init(temp, i);
+        }
+         //alphabet.print();
 
-	// read rotors
-	for (int i = 0; i < numRotors; i++) {
-		getline(cin, s);
-		getline(cin, t);
 
-		// initialize ith rotor
-		rotors[i].init(s, t, alphabet);
-	}
 
-	// read number of reflectors
-	int numReflectors;
-	cin >> numReflectors;
-	cin.get();		// newline
-	Reflector* reflectors = new Reflector[numReflectors];	// make empty reflectors
+        // read rotors
+        for (int i = 0; i < numRotors; i++) {
+                // initialize ith rotor
+                rotors[i].init(/*s, t,*/ alphabet);
+                //rotors[i].print(alphabet);
+        }
 
-	// read reflectors
-	for (int i = 0; i < numReflectors; i++) {
-		getline(cin, s);
+        // read number of reflectors
+        int numReflectors;
+        cin >> numReflectors;
+        Reflector* reflectors = new Reflector[numReflectors];   // make empty reflectors
 
-		reflectors[i].init(s, alphabet);
-	}
+        // read reflectors
+        for (int i = 0; i < numReflectors; i++) {
 
-	// read number of enigmas
-	int numEnigmas;
-	cin >> numEnigmas;
-	cin.get();		// newline
-	Enigma* enigmas = new Enigma[numEnigmas];		// make empty enigmas
+                reflectors[i].init(/*s,*/ alphabet);
+                //reflectors[i].print(alphabet);
+        }
 
-	// read enigmas
-	for (int i = 0; i < numEnigmas; i++) {
-		// read number of rotors installed
-		int k;
-		cin >> k;
+        // read number of enigmas
+        int numEnigmas;
 
-		// set rotor count
-		enigmas[i].init(k, alphabet);
+        cin >> numEnigmas;
 
-		// install rotors
-		for (int j = 0; j < k; j++) {
-			// read jth rotor info
-			int rotorIndex;
-			string rotorStart;
+        Enigma* enigmas = new Enigma[numEnigmas];               // make empty enigmas
 
-			cin >> rotorIndex;
-			cin >> rotorStart;
+        // read enigmas
+        for (int i = 0; i < numEnigmas; i++) {
+                // read number of rotors installed
+                int rotorsInstalled;
+                int k;
+                cin >> rotorsInstalled;
 
-			// install jth rotor
-			enigmas[i].rotors[j] = rotors[rotorIndex];
-			enigmas[i].rotors[j].setIndex(rotorStart, alphabet);
-		}
-		// read reflector
-		int reflectorIndex;
-		cin >> reflectorIndex;
-		cin.get();	// newline
+                // set rotor count
+                enigmas[i].init(rotorsInstalled, alphabet);
 
-		// install reflector
-		enigmas[i].setReflector(reflectors[reflectorIndex]);
+                // install rotors
+                for (int j = 0; j < rotorsInstalled; j++) {
+                        // read jth rotor info
+                        int rotorIndex;
+                        string rotorStart;
 
-		// read task
-		getline(cin, s);
+                        cin >> rotorIndex;
+                        cin >> rotorStart;
 
-		// set task
-		enigmas[i].setString(s);
-	}
+                        // install jth rotor
+                        enigmas[i].rotors[j] = rotors[rotorIndex];
+                        // enigmas[i].rotors[j].print(alphabet);
+                        int rStart = stoi(rotorStart);
+                        //enigmas[i].rotors[j].setIndex(rotorStart, alphabet);
+                        enigmas[i].rotors[j].setIndex(rStart);
+                }
+                // read reflector
+                int reflectorIndex;
+                cin >> reflectorIndex;
 
-	for (int i = 0; i < numEnigmas; i++) {
-		//enigmas->print();
-		cout << enigmas[i].encrypt() << endl;
-	}
-	system("pause");
+                // install reflector
+                enigmas[i].setReflector(reflectors[reflectorIndex]);
+
+                // read task
+                string temp;
+                string txt = "";
+                do {
+                        cin >> temp;
+                        txt += temp;
+                } while (txt.find('0') == -1);
+
+                // set task
+                enigmas[i].setString(txt);
+        }
+
+        for (int i = 0; i < numEnigmas; i++) {
+                enigmas->print();
+                cout << enigmas[i].encrypt() << endl;
+
+                
+        }
+        //system("pause");
 }
